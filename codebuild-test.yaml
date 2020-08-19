@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  TerraformStateMachineArn:
+    Description: Enter the ARN for the State Machine for the Terraform handoff.
+    Default: 'arn:aws:states:us-west-2:122679783945:stateMachine:TerraformStateMachine'
+    Type: String
+
+Resources:
+  TerraformCodeBuild:
+      Type: AWS::CodeBuild::Project
+      Properties:
+          Name: Terraform-CodeBuild-Test
+          ServiceRole: !GetAtt TerraformCodeBuildRole.Arn
+          Source:
+              Type: NO_SOURCE
+              BuildSpec: "version: 0.2\nphases:\n  build:\n    commands:\n      - aws stepfunctions start-execution --state-machine-arn $TERRAFORM_SM_ARN\n  post_build:\n    commands:\n      - echo Terraform completed"
+          Environment:
+              ComputeType: BUILD_GENERAL1_SMALL
+              Image: "aws/codebuild/standard:4.0"
+              Type: LINUX_CONTAINER
+              EnvironmentVariables:
+                - Name: TERRAFORM_SM_ARN
+                  Value: !Ref TerraformStateMachineArn
+          Artifacts:
+              Type: NO_ARTIFACTS
+          TimeoutInMinutes: 480
+
+
+  TerraformCodeBuildRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+
+  TerraformCodeBuildRolePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: "CodebuildPolicyForTerraform"
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Action: "*"
+            Resource: "*"
+      Roles: 
+        - 
+          Ref: "TerraformCodeBuildRole"
+
+
+
