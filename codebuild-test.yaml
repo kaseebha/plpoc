@@ -14,6 +14,7 @@ Resources:
           ServiceRole: !GetAtt TerraformCodeBuildRole.Arn
           Source:
               Type: NO_SOURCE
+              #Type: CODEPIPELINE
               BuildSpec: "version: 0.2\nphases:\n  build:\n    commands:\n      - aws stepfunctions start-execution --state-machine-arn $TERRAFORM_SM_ARN\n  post_build:\n    commands:\n      - echo Terraform completed"
           Environment:
               ComputeType: BUILD_GENERAL1_SMALL
@@ -24,6 +25,7 @@ Resources:
                   Value: !Ref TerraformStateMachineArn
           Artifacts:
               Type: NO_ARTIFACTS
+              #Type: CODEPIPELINE
           TimeoutInMinutes: 480
 
 

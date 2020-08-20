@@ -54,6 +54,11 @@ Parameters:
       - 'Yes'
       - 'No'
 
+  TerraformStateMachineArn:
+    Description: Enter the ARN for the State Machine for the Terraform handoff.
+    Default: 'arn:aws:states:us-west-2:122679783945:stateMachine:TerraformStateMachine'
+    Type: String
+
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -339,6 +344,8 @@ Resources:
                   - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${CustomControlTowerCodeBuild}
                   - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${SCPCodeBuild}
                   - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${StackSetCodeBuild}
+                  - !Sub arn:${AWS::Partition}:codebuild:${AWS::Region}:${AWS::AccountId}:project/${TerraformCodeBuild}
+
               - Effect: "Allow"
                 Action:
                   - codecommit:GetBranch
@@ -846,6 +853,60 @@ Resources:
               Type: CODEPIPELINE
           TimeoutInMinutes: 480
 
+  TerraformCodeBuild:
+      Type: AWS::CodeBuild::Project
+      Properties:
+          Name: Custom-Control-Tower-Terraform-CodeBuild
+          #ServiceRole: !GetAtt StackSetCodeBuildRole.Arn
+          ServiceRole: !GetAtt TerraformCodeBuildRole.Arn
+          EncryptionKey: !Sub
+            - alias/${KMSKeyName}
+            - {KMSKeyName: !FindInMap [KMS, Alias, Name]}
+          Source:
+              Type: CODEPIPELINE
+              BuildSpec: "version: 0.2\nphases:\n  build:\n    commands:\n      - aws stepfunctions start-execution --state-machine-arn $TERRAFORM_SM_ARN\n  post_build:\n    commands:\n      - echo Terraform completed"
+          Environment:
+              ComputeType: BUILD_GENERAL1_SMALL
+              Image: "aws/codebuild/standard:4.0"
+              Type: LINUX_CONTAINER
+              EnvironmentVariables:
+                - Name: TERRAFORM_SM_ARN
+                  Value: !Ref TerraformStateMachineArn
+          Artifacts:
+              Type: CODEPIPELINE
+          TimeoutInMinutes: 480  
+
+  TerraformCodeBuildRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+
+  TerraformCodeBuildRolePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: "CodebuildPolicyForTerraform"
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Action: "*"
+            Resource: "*"
+      Roles: 
+        - 
+          Ref: "TerraformCodeBuildRole"
+
+
+
   CustomControlTowerDeploymentLambdaRole:
     Type: AWS::IAM::Role
     Metadata:
@@ -1015,6 +1076,7 @@ Resources:
                     - Fn::Sub: ${CustomControlTowerCodeBuildRole.Arn}
                     - Fn::Sub: ${SCPCodeBuildRole.Arn}
                     - Fn::Sub: ${StackSetCodeBuildRole.Arn}
+                    - Fn::Sub: ${TerraformCodeBuildRole.Arn}
                     - Fn::Sub: ${CustomControlTowerLELambdaRole.Arn}
                 Service:
                   - "events.amazonaws.com"

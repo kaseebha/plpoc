@@ -1,14 +1,14 @@
 [
             {
-                "Value": "kaseebha+ct-app1-dev@amazon.com",
+                "Value": "kaseebha+ct-app2-dev@amazon.com",
                 "Key": "SSOUserEmail"
             },
             {
-                "Value": "MRL",
+                "Value": "MRL1",
                 "Key": "SSOUserFirstName"
             },
             {
-                "Value": "M",
+                "Value": "M1",
                 "Key": "SSOUserLastName"
             },
             {
@@ -16,11 +16,11 @@
                 "Key": "ManagedOrganizationalUnit"
             },
             {
-                "Value": "ct-app1-dev",
+                "Value": "ct-app1-dev2",
                 "Key": "AccountName"
             },
             {
-                "Value": "kaseebha+ct-app1-dev@amazon.com",
+                "Value": "kaseebha+ct-app2-dev@amazon.com",
                 "Key": "AccountEmail"
             }
 ]
