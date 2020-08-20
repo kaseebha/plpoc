@@ -1,5 +1,10 @@
 #/bin/bash
 
+#Get product-id, provisioning-artifact-id
+#aws servicecatalog search-products --filters FullTextSearch='AWS Control Tower Account Factory'
+#aws servicecatalog describe-product --id prod-XXXXXXXXXXXXXXX
+
+
 PROVISIONED_PRODUCT_NAME="dev-acct-"$(date | md5 | head -c5)
 PROVISION_TOKEN=$(date | md5)
 PRODUCT_ID="prod-n2mfbfheqlkzm"
