@@ -1,0 +1,26 @@
+[
+            {
+                "Value": "kaseebha+ct-app1-dev@amazon.com",
+                "Key": "SSOUserEmail"
+            },
+            {
+                "Value": "MRL",
+                "Key": "SSOUserFirstName"
+            },
+            {
+                "Value": "M",
+                "Key": "SSOUserLastName"
+            },
+            {
+                "Value": "Custom",
+                "Key": "ManagedOrganizationalUnit"
+            },
+            {
+                "Value": "ct-app1-dev",
+                "Key": "AccountName"
+            },
+            {
+                "Value": "kaseebha+ct-app1-dev@amazon.com",
+                "Key": "AccountEmail"
+            }
+]
