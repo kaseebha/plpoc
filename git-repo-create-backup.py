@@ -34,13 +34,13 @@ def generate_tfvars(baseline_repo_name, org_name, project_name, terraform_vars_m
     repo_url = f"https://{pat}@dev.azure.com/{org_name}/{project_name}/_git/{baseline_repo_name}"
     
     git_user_name = "pl-css-admin"
-    git_user_email = "admin@pacificlife.com"
+    git_user_email = "admin@pc.com"
 
     commit_env = os.environ
     commit_env['GIT_AUTHOR_NAME'] = 'PLUser'
-    commit_env['GIT_AUTHOR_EMAIL'] = 'PL@pacificlife.com'
+    commit_env['GIT_AUTHOR_EMAIL'] = 'PL@pc.com'
     commit_env['GIT_COMMITTER_NAME'] = 'PLUser'
-    commit_env['GIT_COMMITTER_EMAIL'] = 'PL@pacificlife.com'
+    commit_env['GIT_COMMITTER_EMAIL'] = 'PL@pc.com'
 
     git.exec_command('clone', repo_url, new_repo_path)
     
@@ -189,13 +189,13 @@ def create_baseline_subdirectory(org, project_name, baseline_repo_name, subdir_n
     baseline_repo_url = f"https://{pat}@dev.azure.com/{org}/{project_name}/_git/{baseline_repo_name}"
     
     git_user_name = "pl-css-admin"
-    git_user_email = "admin@pacificlife.com"
+    git_user_email = "admin@pc.com"
 
     commit_env = os.environ
     commit_env['GIT_AUTHOR_NAME'] = 'PLUser'
-    commit_env['GIT_AUTHOR_EMAIL'] = 'PL@pacificlife.com'
+    commit_env['GIT_AUTHOR_EMAIL'] = 'PL@pc.com'
     commit_env['GIT_COMMITTER_NAME'] = 'PLUser'
-    commit_env['GIT_COMMITTER_EMAIL'] = 'PL@pacificlife.com'
+    commit_env['GIT_COMMITTER_EMAIL'] = 'PL@pc.com'
 
     git.exec_command('clone', baseline_repo_url, local_repo_path)
        
